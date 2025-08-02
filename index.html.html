@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dividend & Cash Flow Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #0a1628 0%, #1e3a8a 50%, #000000 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #111827 0%, #1f2937 100%);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #000000 0%, #1e40af 50%, #0f172a 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header p {
+            margin: 8px 0 0 0;
+            opacity: 0.85;
+            font-size: 1em;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 25px;
+        }
+        
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            background: linear-gradient(145deg, #1f2937 0%, #374151 100%);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .input-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        
+        .input-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .input-group h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #d1d5db;
+            font-size: 0.9em;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background: rgba(17, 24, 39, 0.8);
+            color: #ffffff;
+            font-weight: 500;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(17, 24, 39, 1);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        input[type="number"]:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e3a8a 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 25px auto;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #1e40af 100%);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .results-section {
+            margin-top: 30px;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(145deg, #000000 0%, #1e40af 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        
+        .summary-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.95em;
+            opacity: 0.9;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .summary-card .value {
+            font-size: 1.6em;
+            font-weight: 700;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .table-container {
+            background: linear-gradient(145deg, #111827 0%, #1f2937 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #000000 0%, #1e40af 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            color: #e5e7eb;
+            font-size: 0.9em;
+        }
+        
+        tr:nth-child(even) {
+            background: rgba(31, 41, 55, 0.3);
+        }
+        
+        tr:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .number {
+            text-align: right;
+            font-family: 'SF Mono', 'Monaco', 'Roboto Mono', monospace;
+            font-weight: 500;
+        }
+        
+        .export-section {
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+            color: white;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+        }
+        
+        .highlight-row {
+            background: rgba(59, 130, 246, 0.15) !important;
+            font-weight: 600;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .input-section {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            table {
+                font-size: 13px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Dividend & Cash Flow Calculator</h1>
+            <p>Calculate future annual cash flow over customizable years with dividend reinvestment</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="input-group">
+                    <h3>💼 Starting Capital</h3>
+                    <div class="form-group">
+                        <label for="startBalance">Starting Balance (NOK)</label>
+                        <input type="number" id="startBalance" value="5000000" min="0" step="10000">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <h3>📈 Return Assumptions</h3>
+                    <div class="form-group">
+                        <label for="dividendYield">Annual Dividend Yield (%)</label>
+                        <input type="number" id="dividendYield" value="6.5" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="stockGrowth">Annual Stock Price Growth (%)</label>
+                        <input type="number" id="stockGrowth" value="4.0" min="-50" max="50" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <h3>💵 New Contributions</h3>
+                    <div class="form-group">
+                        <label for="annualContribution">Annual New Contribution (NOK)</label>
+                        <input type="number" id="annualContribution" value="500000" min="0" step="10000">
+                    </div>
+                    <div class="form-group">
+                        <label for="contributionGrowth">Annual Contribution Increase (%)</label>
+                        <input type="number" id="contributionGrowth" value="2.0" min="0" max="20" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <h3>⚙️ Advanced Settings</h3>
+                    <div class="form-group">
+                        <label for="forecastYears">Forecast Period (Years)</label>
+                        <input type="number" id="forecastYears" value="25" min="1" max="50" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="reinvestmentRate">Dividend Reinvestment Rate (%)</label>
+                        <input type="number" id="reinvestmentRate" value="75" min="0" max="100" step="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="taxRate">Dividend Tax Rate (%)</label>
+                        <input type="number" id="taxRate" value="0" min="0" max="50" step="1">
+                    </div>
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateProjection()" id="calculateBtn">🚀 Calculate Projection</button>
+            
+            <div class="results-section" id="results" style="display: none;">
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h4 id="finalValueTitle">Total Portfolio Value</h4>
+                        <p class="value" id="finalValue">-</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4 id="finalCashflowTitle">Annual Cash Flow</h4>
+                        <p class="value" id="finalCashflow">-</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Total Contributions</h4>
+                        <p class="value" id="totalContributions">-</p>
+                    </div>
+                    <div class="summary-card">
+                        <h4>Total Return</h4>
+                        <p class="value" id="totalReturn">-</p>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Portfolio Value</th>
+                                <th>Annual Dividend</th>
+                                <th>Cash Payout</th>
+                                <th>Reinvested Dividend</th>
+                                <th>New Contribution</th>
+                                <th>Cumulative Contributions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectionTable">
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="export-section">
+                    <button class="export-btn" onclick="exportToCSV()">📊 Export to CSV</button>
+                    <button class="export-btn" onclick="copyToClipboard()">📋 Copy Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projectionData = [];
+        
+        function formatNumber(num) {
+            return new Intl.NumberFormat('no-NO', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(Math.round(num));
+        }
+        
+        function formatCurrency(num) {
+            return formatNumber(num) + ' kr';
+        }
+        
+        function calculateProjection() {
+            try {
+                const startBalance = parseFloat(document.getElementById('startBalance').value) || 0;
+                const dividendYield = parseFloat(document.getElementById('dividendYield').value) / 100 || 0;
+                const stockGrowth = parseFloat(document.getElementById('stockGrowth').value) / 100 || 0;
+                const annualContribution = parseFloat(document.getElementById('annualContribution').value) || 0;
+                const contributionGrowth = parseFloat(document.getElementById('contributionGrowth').value) / 100 || 0;
+                const reinvestmentRate = parseFloat(document.getElementById('reinvestmentRate').value) / 100 || 0;
+                const taxRate = parseFloat(document.getElementById('taxRate').value) / 100 || 0;
+                const forecastYears = parseInt(document.getElementById('forecastYears').value) || 25;
+                
+                // Update button text and headers dynamically
+                document.getElementById('calculateBtn').innerHTML = '🚀 Calculate ' + forecastYears + '-Year Projection';
+                document.getElementById('finalValueTitle').textContent = 'Total Portfolio Value Year ' + forecastYears;
+                document.getElementById('finalCashflowTitle').textContent = 'Annual Cash Flow Year ' + forecastYears;
+                
+                projectionData = [];
+                let portfolioValue = startBalance;
+                let yearlyContribution = annualContribution;
+                let cumulativeContributions = startBalance;
+                
+                for (let year = 1; year <= forecastYears; year++) {
+                    // Calculate annual dividend
+                    const grossDividend = portfolioValue * dividendYield;
+                    const netDividend = grossDividend * (1 - taxRate);
+                    
+                    // Calculate cash payout and reinvestment
+                    const cashPayout = netDividend * (1 - reinvestmentRate);
+                    const reinvestedDividend = netDividend * reinvestmentRate;
+                    
+                    // Add new annual contribution
+                    portfolioValue += yearlyContribution;
+                    cumulativeContributions += yearlyContribution;
+                    
+                    // Add reinvested dividend
+                    portfolioValue += reinvestedDividend;
+                    
+                    // Calculate price growth on entire portfolio
+                    portfolioValue *= (1 + stockGrowth);
+                    
+                    projectionData.push({
+                        year: year,
+                        portfolioValue: portfolioValue,
+                        grossDividend: grossDividend,
+                        netDividend: netDividend,
+                        cashPayout: cashPayout,
+                        reinvestedDividend: reinvestedDividend,
+                        yearlyContribution: yearlyContribution,
+                        cumulativeContributions: cumulativeContributions
+                    });
+                    
+                    // Increase annual contribution for next year
+                    yearlyContribution *= (1 + contributionGrowth);
+                }
+                
+                displayResults();
+            } catch (error) {
+                console.error('Error in calculateProjection:', error);
+            }
+        }
+        
+        function displayResults() {
+            try {
+                const finalYear = projectionData[projectionData.length - 1];
+                const totalContributions = finalYear.cumulativeContributions;
+                const finalValue = finalYear.portfolioValue;
+                const totalReturn = ((finalValue - totalContributions) / totalContributions) * 100;
+                
+                // Update summary cards
+                document.getElementById('finalValue').textContent = formatCurrency(finalValue);
+                document.getElementById('finalCashflow').textContent = formatCurrency(finalYear.cashPayout);
+                document.getElementById('totalContributions').textContent = formatCurrency(totalContributions);
+                document.getElementById('totalReturn').textContent = totalReturn.toFixed(1) + '%';
+                
+                // Build table
+                const tableBody = document.getElementById('projectionTable');
+                tableBody.innerHTML = '';
+                
+                projectionData.forEach(function(data, index) {
+                    const row = tableBody.insertRow();
+                    row.className = 'highlight-row';
+                    
+                    row.insertCell(0).textContent = data.year;
+                    row.insertCell(1).textContent = formatCurrency(data.portfolioValue);
+                    row.insertCell(2).textContent = formatCurrency(data.netDividend);
+                    row.insertCell(3).textContent = formatCurrency(data.cashPayout);
+                    row.insertCell(4).textContent = formatCurrency(data.reinvestedDividend);
+                    row.insertCell(5).textContent = formatCurrency(data.yearlyContribution);
+                    row.insertCell(6).textContent = formatCurrency(data.cumulativeContributions);
+                    
+                    // Add number formatting
+                    for (let i = 1; i < row.cells.length; i++) {
+                        row.cells[i].className = 'number';
+                    }
+                });
+                
+                document.getElementById('results').style.display = 'block';
+            } catch (error) {
+                console.error('Error in displayResults:', error);
+            }
+        }
+        
+        function exportToCSV() {
+            try {
+                const forecastYears = parseInt(document.getElementById('forecastYears').value) || 25;
+                let csv = 'Year,Portfolio Value,Annual Dividend,Cash Payout,Reinvested Dividend,New Contribution,Cumulative Contributions\n';
+                
+                projectionData.forEach(function(data) {
+                    csv += data.year + ',' + data.portfolioValue.toFixed(0) + ',' + data.netDividend.toFixed(0) + ',' + data.cashPayout.toFixed(0) + ',' + data.reinvestedDividend.toFixed(0) + ',' + data.yearlyContribution.toFixed(0) + ',' + data.cumulativeContributions.toFixed(0) + '\n';
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'dividend_projection_' + forecastYears + '_years.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } catch (error) {
+                console.error('Error in exportToCSV:', error);
+            }
+        }
+        
+        function copyToClipboard() {
+            try {
+                let text = 'Year\tPortfolio Value\tAnnual Dividend\tCash Payout\tReinvested Dividend\tNew Contribution\tCumulative Contributions\n';
+                
+                projectionData.forEach(function(data) {
+                    text += data.year + '\t' + formatNumber(data.portfolioValue) + '\t' + formatNumber(data.netDividend) + '\t' + formatNumber(data.cashPayout) + '\t' + formatNumber(data.reinvestedDividend) + '\t' + formatNumber(data.yearlyContribution) + '\t' + formatNumber(data.cumulativeContributions) + '\n';
+                });
+                
+                navigator.clipboard.writeText(text).then(function() {
+                    alert('Data copied to clipboard! You can now paste it into Excel.');
+                });
+            } catch (error) {
+                console.error('Error in copyToClipboard:', error);
+            }
+        }
+        
+        // Auto-calculate on load
+        window.onload = function() {
+            calculateProjection();
+        };
+        
+        // Auto-update on input change
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(function(input) {
+                input.addEventListener('input', calculateProjection);
+            });
+        });
+    </script>
+</body>
+</html>
